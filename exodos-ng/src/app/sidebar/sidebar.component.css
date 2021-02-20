@@ -1,3 +1,20 @@
+.sidebar-element{
+    width: 100%;
+    height: 100%;
+}
 .mini-map{
-    background-color: lightcoral;
+    background-color: lightgreen;
+
+}
+.main-info{
+    background-color: lightskyblue;
+
+}
+.main-controls{
+    background-color: lightpink;
+   
+}
+.active-unit{
+    background-color: lightyellow;
+
 }
