@@ -8,3 +8,7 @@ img{
     margin-top: auto;
     margin-bottom: auto;
 }
+canvas { 
+    border-style: solid;
+    border-color: green;
+}
