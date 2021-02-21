@@ -9,4 +9,6 @@
     padding: 0em 0em 0em 0em;
     margin: 0em;
     height: 100%;
+    overflow: hidden;
+    width: fit-content;
 }

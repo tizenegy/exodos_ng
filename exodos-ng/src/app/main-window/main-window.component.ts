@@ -9,7 +9,7 @@ export class MainWindowComponent implements OnInit {
   @ViewChild('canvas', { static: true }) public canvas!: ElementRef;
   private ctx!: CanvasRenderingContext2D;
   squares: Square[] = new Array();
-  edgeLength: number = 30;
+  gridWidth: number = 20;
 
   // todo: get height and width of main-window and make canvas as large as possible.
 
@@ -19,23 +19,32 @@ export class MainWindowComponent implements OnInit {
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
+    this.ctx.canvas.height = 800;
+    this.ctx.canvas.width = 900;
     let canvasClickListener = this.renderer.listen(this.canvas.nativeElement, 'click', (event) => {
       this.newUnit(event.offsetX, event.offsetY);
-      console.log('Clicking the button', event);
-      console.log(event.offsetX);
-      console.log(event.offsetY);
     });
-
+    let canvasArrowListener = this.renderer.listen(document, 'keydown', (event) => {
+      event.preventDefault();
+      this.orderUnit(event.keyCode);
+    });
   }
 
-  newUnit(xPosition: number, yPosition: number): void {
+  newUnit(x: number, y: number): void {
     this.ctx.fillStyle = 'green';
-    const square = new Square(this.ctx, xPosition, yPosition, this.edgeLength);
+    var xPosition = x - (x % this.gridWidth);
+    var yPosition = y - (y % this.gridWidth);
+    const square = new Square(this.ctx, xPosition, yPosition, this.gridWidth);
     this.squares.push(square);
-    console.log(this.squares);
     square.renderAllSquares(this.squares);
   }
+
+  orderUnit(code: number): void{
+    let recentUnit = this.squares[this.squares.length-1];
+    recentUnit.move(code, this.gridWidth, this.squares);
+  }
 }
+
 
 export class Square {
   
@@ -46,9 +55,30 @@ export class Square {
     private edgeLength: number
     ) {}
 
-  moveRight() {
-    this.xPosition++;
-    this.draw();
+  move(code:number, gridWidth:number, squares:Square[]) {
+    switch(code) { 
+      case 37: { 
+        this.xPosition = this.xPosition - gridWidth; 
+         break; 
+      } 
+      case 38: { 
+        this.yPosition = this.yPosition - gridWidth;  
+         break; 
+      } 
+      case 39: { 
+        this.xPosition = this.xPosition + gridWidth; 
+         break; 
+      } 
+      case 40: { 
+        this.yPosition = this.yPosition + gridWidth;
+         break; 
+      } 
+      default: { 
+         //statements; 
+         break; 
+      } 
+   } 
+    this.renderAllSquares(squares);
   }
 
   private draw() {
