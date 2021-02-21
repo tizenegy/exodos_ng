@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
+import { LocalStorageService } from '../local-storage.service';
 
 @Component({
   selector: 'app-main-window',
@@ -13,9 +14,7 @@ export class MainWindowComponent implements OnInit {
 
   // todo: get height and width of main-window and make canvas as large as possible.
 
-  constructor(private renderer: Renderer2) {
-
-  }
+  constructor(private renderer: Renderer2, private localStorageService: LocalStorageService) {}
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
@@ -91,7 +90,8 @@ export class Square {
     this.ctx.clearRect(0, 0, width, height);
     squares.forEach((square: Square) => {
       square.draw();
-      });  
+      });
+    console.log(squares);
   }
 
   // // this function lets squares jump across the canvas. it is not needed now.
