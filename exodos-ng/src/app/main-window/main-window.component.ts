@@ -9,6 +9,7 @@ export class MainWindowComponent implements OnInit {
   @ViewChild('canvas', { static: true }) public canvas!: ElementRef;
   private ctx!: CanvasRenderingContext2D;
   squares: Square[] = new Array();
+  edgeLength: number = 30;
 
   // todo: get height and width of main-window and make canvas as large as possible.
 
@@ -18,16 +19,18 @@ export class MainWindowComponent implements OnInit {
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
-    let simple = this.renderer.listen(this.canvas.nativeElement, 'click', (evt) => {
-      
-      console.log('Clicking the button', evt);
+    let canvasClickListener = this.renderer.listen(this.canvas.nativeElement, 'click', (event) => {
+      this.newUnit(event.offsetX, event.offsetY);
+      console.log('Clicking the button', event);
+      console.log(event.offsetX);
+      console.log(event.offsetY);
     });
 
   }
 
-  newUnit(): void {
+  newUnit(xPosition: number, yPosition: number): void {
     this.ctx.fillStyle = 'green';
-    const square = new Square(this.ctx, 1, 2, 30);
+    const square = new Square(this.ctx, xPosition, yPosition, this.edgeLength);
     this.squares.push(square);
     console.log(this.squares);
     square.renderAllSquares(this.squares);
@@ -38,7 +41,6 @@ export class Square {
   
   constructor(
     private ctx: CanvasRenderingContext2D,
-    // private color: string,
     private xPosition: number,
     private yPosition: number,
     private edgeLength: number
@@ -50,8 +52,7 @@ export class Square {
   }
 
   private draw() {
-    // this.ctx.fillStyle = this.color;
-    this.ctx.fillRect(this.edgeLength * this.xPosition, this.edgeLength * this.yPosition, this.edgeLength, this.edgeLength);
+    this.ctx.fillRect(this.xPosition, this.yPosition, this.edgeLength, this.edgeLength);
   }
 
   renderAllSquares(squares:Square[]) {
@@ -63,7 +64,7 @@ export class Square {
       });  
   }
 
-  // // this function lets squares jump across the canvas
+  // // this function lets squares jump across the canvas. it is not needed now.
   // move(squares:Square[]) {
   //   const width = this.ctx.canvas.width;
   //   const height = this.ctx.canvas.height;
