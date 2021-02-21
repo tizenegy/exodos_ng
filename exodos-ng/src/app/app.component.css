@@ -5,23 +5,8 @@
     height: 100%;
 }
 .main-window{
-    background-color: lightgrey;
+    background-color: black;
     padding: 0em 0em 0em 0em;
     margin: 0em;
     height: 100%;
-}
-.app-component{
-    background-color: lightblue;
-    padding: 1em;
-    margin: 1em;
-    
-}
-.row{
-    
-}
-.col{
-   
-}
-.container-fluid{
-    
 }
