@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, Renderer2 } from '@angular/core';
 
 @Component({
   selector: 'app-main-window',
@@ -10,47 +10,68 @@ export class MainWindowComponent implements OnInit {
   private ctx!: CanvasRenderingContext2D;
   squares: Square[] = new Array();
 
-  constructor() {}
+  // todo: get height and width of main-window and make canvas as large as possible.
+
+  constructor(private renderer: Renderer2) {
+
+  }
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
+    let simple = this.renderer.listen(this.canvas.nativeElement, 'click', (evt) => {
+      
+      console.log('Clicking the button', evt);
+    });
+
   }
 
-  animate(): void {
+  newUnit(): void {
     this.ctx.fillStyle = 'green';
-    const square = new Square(this.ctx);
+    const square = new Square(this.ctx, 1, 2, 30);
     this.squares.push(square);
     console.log(this.squares);
-    square.move(this.squares);
+    square.renderAllSquares(this.squares);
   }
 }
 
 export class Square {
-  private color = 'green';
-  private x = 0;
-  private y = 0;
-  private z = 30;
-
-  constructor(private ctx: CanvasRenderingContext2D) {}
+  
+  constructor(
+    private ctx: CanvasRenderingContext2D,
+    // private color: string,
+    private xPosition: number,
+    private yPosition: number,
+    private edgeLength: number
+    ) {}
 
   moveRight() {
-    this.x++;
+    this.xPosition++;
     this.draw();
   }
 
   private draw() {
-    this.ctx.fillStyle = this.color;
-    this.ctx.fillRect(this.z * this.x, this.z * this.y, this.z, this.z);
+    // this.ctx.fillStyle = this.color;
+    this.ctx.fillRect(this.edgeLength * this.xPosition, this.edgeLength * this.yPosition, this.edgeLength, this.edgeLength);
   }
 
-  move(squares:Square[]) {
+  renderAllSquares(squares:Square[]) {
     const width = this.ctx.canvas.width;
     const height = this.ctx.canvas.height;
-    setInterval(() => {
-      this.ctx.clearRect(0, 0, width, height);
-      squares.forEach((square: Square) => {
-        square.moveRight();
-      });
-    }, 2000);    
+    this.ctx.clearRect(0, 0, width, height);
+    squares.forEach((square: Square) => {
+      square.draw();
+      });  
   }
+
+  // // this function lets squares jump across the canvas
+  // move(squares:Square[]) {
+  //   const width = this.ctx.canvas.width;
+  //   const height = this.ctx.canvas.height;
+  //   setInterval(() => {
+  //     this.ctx.clearRect(0, 0, width, height);
+  //     squares.forEach((square: Square) => {
+  //       square.moveRight();
+  //     });
+  //   }, 2000);    
+  // }
 }
