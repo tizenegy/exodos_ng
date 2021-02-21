@@ -9,7 +9,7 @@ import { LocalStorageService } from '../local-storage.service';
 export class MainWindowComponent implements OnInit {
   @ViewChild('canvas', { static: true }) public canvas!: ElementRef;
   private ctx!: CanvasRenderingContext2D;
-  squares: Square[] = new Array();
+  units: Unit[] = new Array();
   gridWidth: number = 20;
 
   // todo: get height and width of main-window and make canvas as large as possible.
@@ -33,19 +33,20 @@ export class MainWindowComponent implements OnInit {
     this.ctx.fillStyle = 'green';
     var xPosition = x - (x % this.gridWidth);
     var yPosition = y - (y % this.gridWidth);
-    const square = new Square(this.ctx, xPosition, yPosition, this.gridWidth);
-    this.squares.push(square);
-    square.renderAllSquares(this.squares);
+    const unit = new Unit(this.ctx, xPosition, yPosition, this.gridWidth);
+    this.units.push(unit);
+    this.localStorageService.setItem('allUnits', JSON.stringify(this.units));
+    unit.renderAllUnits(this.units);
   }
 
   orderUnit(code: number): void{
-    let recentUnit = this.squares[this.squares.length-1];
-    recentUnit.move(code, this.gridWidth, this.squares);
+    let recentUnit = this.units[this.units.length-1];
+    recentUnit.move(code, this.gridWidth, this.units);
   }
 }
 
 
-export class Square {
+export class Unit {
   
   constructor(
     private ctx: CanvasRenderingContext2D,
@@ -54,7 +55,7 @@ export class Square {
     private edgeLength: number
     ) {}
 
-  move(code:number, gridWidth:number, squares:Square[]) {
+  move(code:number, gridWidth:number, units:Unit[]) {
     switch(code) { 
       case 37: { 
         this.xPosition = this.xPosition - gridWidth; 
@@ -77,31 +78,32 @@ export class Square {
          break; 
       } 
    } 
-    this.renderAllSquares(squares);
+    this.renderAllUnits(units);
   }
 
   private draw() {
     this.ctx.fillRect(this.xPosition, this.yPosition, this.edgeLength, this.edgeLength);
   }
 
-  renderAllSquares(squares:Square[]) {
+  // todo: think about moving this method out of this class. there seems no real reason for it to be in here.
+  renderAllUnits(units:Unit[]) {
     const width = this.ctx.canvas.width;
     const height = this.ctx.canvas.height;
     this.ctx.clearRect(0, 0, width, height);
-    squares.forEach((square: Square) => {
-      square.draw();
+    units.forEach((unit: Unit) => {
+      unit.draw();
       });
-    console.log(squares);
+    console.log(units);
   }
 
-  // // this function lets squares jump across the canvas. it is not needed now.
-  // move(squares:Square[]) {
+  // // this function lets units jump across the canvas. it is not needed now.
+  // move(units:Unit[]) {
   //   const width = this.ctx.canvas.width;
   //   const height = this.ctx.canvas.height;
   //   setInterval(() => {
   //     this.ctx.clearRect(0, 0, width, height);
-  //     squares.forEach((square: Square) => {
-  //       square.moveRight();
+  //     units.forEach((unit: Unit) => {
+  //       unit.moveRight();
   //     });
   //   }, 2000);    
   // }
