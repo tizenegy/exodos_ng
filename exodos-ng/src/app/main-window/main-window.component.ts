@@ -33,43 +33,58 @@ export class MainWindowComponent implements OnInit {
     this.ctx.fillStyle = 'green';
     var xPosition = x - (x % this.gridWidth);
     var yPosition = y - (y % this.gridWidth);
-    const unit = new Unit(this.ctx, xPosition, yPosition, this.gridWidth);
+    const unit = new Unit(xPosition, yPosition, this.gridWidth, false);
     this.units.push(unit);
     this.localStorageService.setItem('allUnits', JSON.stringify(this.units));
-    unit.renderAllUnits(this.units);
+    this.renderAllUnits();
+    console.log(this.units);
   }
 
   orderUnit(code: number): void{
     let recentUnit = this.units[this.units.length-1];
-    recentUnit.move(code, this.gridWidth, this.units);
+    recentUnit.move(this.ctx, code, this.gridWidth, this.units);
   }
+
+  renderAllUnits() {
+    const width = this.ctx.canvas.width;
+    const height = this.ctx.canvas.height;
+    this.ctx.clearRect(0, 0, width, height);
+    this.units.forEach((unit: Unit) => {
+      unit.draw(this.ctx);
+      });
+  }
+
 }
 
 
 export class Unit {
   
   constructor(
-    private ctx: CanvasRenderingContext2D,
     private xPosition: number,
     private yPosition: number,
-    private edgeLength: number
+    private edgeLength: number,
+    private isActive: boolean
     ) {}
 
-  move(code:number, gridWidth:number, units:Unit[]) {
+  move(ctx: CanvasRenderingContext2D, code:number, gridWidth:number, units:Unit[]) {
     switch(code) { 
       case 37: { 
+        this.clear(ctx);
         this.xPosition = this.xPosition - gridWidth; 
          break; 
       } 
       case 38: { 
+        this.clear(ctx);
         this.yPosition = this.yPosition - gridWidth;  
          break; 
       } 
       case 39: { 
+        this.clear(ctx);
         this.xPosition = this.xPosition + gridWidth; 
          break; 
       } 
       case 40: { 
+        this.clear(ctx);
         this.yPosition = this.yPosition + gridWidth;
          break; 
       } 
@@ -78,22 +93,15 @@ export class Unit {
          break; 
       } 
    } 
-    this.renderAllUnits(units);
+    this.draw(ctx);
   }
 
-  private draw() {
-    this.ctx.fillRect(this.xPosition, this.yPosition, this.edgeLength, this.edgeLength);
+  draw(ctx: CanvasRenderingContext2D) {
+    ctx.fillRect(this.xPosition, this.yPosition, this.edgeLength, this.edgeLength);
   }
 
-  // todo: think about moving this method out of this class. there seems no real reason for it to be in here.
-  renderAllUnits(units:Unit[]) {
-    const width = this.ctx.canvas.width;
-    const height = this.ctx.canvas.height;
-    this.ctx.clearRect(0, 0, width, height);
-    units.forEach((unit: Unit) => {
-      unit.draw();
-      });
-    console.log(units);
+  clear(ctx: CanvasRenderingContext2D){
+    ctx.clearRect(this.xPosition, this.yPosition, this.edgeLength, this.edgeLength);
   }
 
   // // this function lets units jump across the canvas. it is not needed now.
