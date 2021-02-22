@@ -70,12 +70,11 @@ export class MainWindowComponent implements OnInit {
   }
 
   orderUnit(code: number): void {
-    let activeUnits = this.units.filter(unit => unit.getIsActive() === true);
-    activeUnits.forEach((unit: Unit) => {
-      unit.move(this.ctx, code, this.gridWidth, this.units);
-    });
-
-
+    let activeUnit:Unit|undefined = this.units.find(unit => unit.getIsActive() === true);
+    if (activeUnit !== undefined){
+      activeUnit.move(this.ctx, code, this.gridWidth, this.units);
+    }
+    this.renderAllUnits();
   }
 
   renderAllUnits() {
