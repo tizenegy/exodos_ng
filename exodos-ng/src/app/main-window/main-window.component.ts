@@ -14,30 +14,44 @@ export class MainWindowComponent implements OnInit {
 
   // todo: get height and width of main-window and make canvas as large as possible.
 
-  constructor(private renderer: Renderer2, private localStorageService: LocalStorageService) {}
+  constructor(private renderer: Renderer2, private localStorageService: LocalStorageService) {
+  }
 
   ngOnInit(): void {
     this.ctx = this.canvas.nativeElement.getContext('2d');
     this.ctx.canvas.height = 800;
     this.ctx.canvas.width = 900;
     let canvasClickListener = this.renderer.listen(this.canvas.nativeElement, 'click', (event) => {
-      this.newUnit(event.offsetX, event.offsetY);
+      this.activateUnit(event.offsetX, event.offsetY);
     });
     let canvasArrowListener = this.renderer.listen(document, 'keydown', (event) => {
       event.preventDefault();
       this.orderUnit(event.keyCode);
     });
+    this.units.push(new Unit(20, 20, this.gridWidth, false));
+    this.units.push(new Unit(40, 40, this.gridWidth, false));
+    this.units.push(new Unit(100, 40, this.gridWidth, false));
+    this.units.push(new Unit(40, 100, this.gridWidth, false));
+    this.units.push(new Unit(120, 120, this.gridWidth, false));
+    this.renderAllUnits();
+  }
+
+  activateUnit(x: number, y: number): void {
+    var xPosition = x - (x % this.gridWidth);
+    var yPosition = y - (y % this.gridWidth);
+    let result = this.units.find(unit => unit.getxPosition() === xPosition && unit.getyPosition() === yPosition);
+    console.log(result);
   }
 
   newUnit(x: number, y: number): void {
-    this.ctx.fillStyle = 'green';
     var xPosition = x - (x % this.gridWidth);
     var yPosition = y - (y % this.gridWidth);
     const unit = new Unit(xPosition, yPosition, this.gridWidth, false);
     this.units.push(unit);
+    // todo: start using localstorage correctly
     this.localStorageService.setItem('allUnits', JSON.stringify(this.units));
     this.renderAllUnits();
-    console.log(this.units);
+    
   }
 
   orderUnit(code: number): void{
@@ -46,6 +60,7 @@ export class MainWindowComponent implements OnInit {
   }
 
   renderAllUnits() {
+    this.ctx.fillStyle = 'green';
     const width = this.ctx.canvas.width;
     const height = this.ctx.canvas.height;
     this.ctx.clearRect(0, 0, width, height);
@@ -65,6 +80,13 @@ export class Unit {
     private edgeLength: number,
     private isActive: boolean
     ) {}
+
+  getxPosition(): number {
+    return this.xPosition;
+  }
+  getyPosition(): number {
+    return this.yPosition;
+  }
 
   move(ctx: CanvasRenderingContext2D, code:number, gridWidth:number, units:Unit[]) {
     switch(code) { 
